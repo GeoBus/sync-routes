@@ -1,0 +1,6 @@
+{
+  "title": "GeoBus Sync - Routes",
+  "database": {
+    "connection-string": "env-var"
+  }
+}
