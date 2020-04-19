@@ -9,22 +9,22 @@
 /* IMPORTS */
 const database = require("./services/database");
 const carrisAPI = require("./services/carrisAPI");
-const { Route } = require("./models/Stop");
+const { Route } = require("./models/Route");
 
 (async () => {
-  console.log("* * * GEOBUS-SYNC-STOPS * * *");
+  console.log("* * * GEOBUS-SYNC-ROUTES * * *");
   console.log();
 
   await database.connect();
 
   console.log("Starting...");
 
-  console.log("Updating " + savedRoutes.length + " routes...");
-
   // Request Routes ETAs for each Stop from Carris API
   const allRoutes = await carrisAPI.getAllRoutes();
 
-  const savedRoutes = await Routes.find({});
+  console.log("Updating " + allRoutes.length + " routes...");
+
+  const savedRoutes = await Route.find({});
 
   for (const route of allRoutes) {
     if (route.isPublicVisible) {

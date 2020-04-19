@@ -14,8 +14,8 @@ exports.Route = mongoose.model(
   "Route",
   new mongoose.Schema({
     routeNumber: {
-      type: Number,
-      maxlength: 5,
+      type: String,
+      maxlength: 3,
     },
     name: {
       type: String,
