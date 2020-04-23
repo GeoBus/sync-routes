@@ -76,3 +76,30 @@ exports.getAllRoutes = async () => {
       return [];
     });
 };
+
+/* * *
+ * Request Carris API for the latest vehicleStatuses.
+ */
+exports.getRouteInfo = async (routeNumber) => {
+  // Set request params
+  const params = {
+    method: "GET",
+    url: setAPIEndpoint("Routes/" + routeNumber),
+    headers: setRequestHeaders(),
+  };
+
+  // Perform the request to the Carris API
+  // and return response to the caller
+  return await requestCarrisAPI(params)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      console.log("carrisAPI.getRouteInfo()");
+      console.log(
+        "Failed getting route " + routeNumber + " info from Carris API."
+      );
+      console.log(error);
+      return [];
+    });
+};
