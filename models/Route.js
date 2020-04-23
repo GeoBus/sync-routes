@@ -51,6 +51,10 @@ exports.Route = mongoose.model(
         ],
         descending: [
           {
+            orderInRoute: {
+              type: Number,
+              maxlength: 30,
+            },
             publicId: {
               type: String,
               maxlength: 6,
@@ -71,6 +75,10 @@ exports.Route = mongoose.model(
         ],
         circular: [
           {
+            orderInRoute: {
+              type: Number,
+              maxlength: 30,
+            },
             publicId: {
               type: String,
               maxlength: 6,
