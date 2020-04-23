@@ -30,7 +30,7 @@ const { Route } = require("./models/Route");
   for (const route of allRoutes) {
     if (route.isPublicVisible) {
       // For each public route, get it's info
-      const routeInfo = carrisAPI.getRouteInfo(route.routeNumber);
+      const routeInfo = await carrisAPI.getRouteInfo(route.routeNumber);
 
       // Start a new route instance
       let newRoute = {
@@ -43,9 +43,9 @@ const { Route } = require("./models/Route");
       for (const variant of routeInfo.variants) {
         // For each active variant, get it's stops
         if (variant.isActive) {
-          let variant = {
+          let variantToBeSaved = {
             number: variant.variantNumber,
-            isCircular: routeInfo.isCircular,
+            isCircular: routeInfo.isCirc,
           };
 
           /* Ascending itinerary */
@@ -60,7 +60,7 @@ const { Route } = require("./models/Route");
                 lng: connection.busStop.lng,
               });
             }
-            variant.ascending = ascending;
+            variantToBeSaved.ascending = ascending;
           }
 
           /* Descending itinerary */
@@ -75,7 +75,7 @@ const { Route } = require("./models/Route");
                 lng: connection.busStop.lng,
               });
             }
-            variant.descending = descending;
+            variantToBeSaved.descending = descending;
           }
 
           /* Circular itinerary */
@@ -90,11 +90,11 @@ const { Route } = require("./models/Route");
                 lng: connection.busStop.lng,
               });
             }
-            variant.circular = circular;
+            variantToBeSaved.circular = circular;
           }
 
           // Append this variant to the route
-          newRoute.variants.push(variant);
+          newRoute.variants.push(variantToBeSaved);
         }
       }
 

@@ -24,7 +24,6 @@ exports.Route = mongoose.model(
     variants: [
       {
         number: { type: Number, maxlength: 2 },
-        name: { type: Number, maxlength: 2 },
         isCircular: { type: Boolean },
         ascending: [
           {
