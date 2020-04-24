@@ -60,6 +60,7 @@ const { Route } = require("./models/Route");
                 lng: connection.busStop.lng,
               });
             }
+            ascending.sort((a, b) => a.orderInRoute - b.orderInRoute);
             variantToBeSaved.ascending = ascending;
           }
 
@@ -75,6 +76,7 @@ const { Route } = require("./models/Route");
                 lng: connection.busStop.lng,
               });
             }
+            descending.sort((a, b) => a.orderInRoute - b.orderInRoute);
             variantToBeSaved.descending = descending;
           }
 
@@ -90,6 +92,7 @@ const { Route } = require("./models/Route");
                 lng: connection.busStop.lng,
               });
             }
+            circular.sort((a, b) => a.orderInRoute - b.orderInRoute);
             variantToBeSaved.circular = circular;
           }
 
@@ -98,7 +101,8 @@ const { Route } = require("./models/Route");
         }
       }
 
-      // Append this route to the main routesToBeSaved array
+      // Sort & Append this route to the main routesToBeSaved array
+      newRoute.variants.sort((a, b) => a.variantNumber - b.variantNumber);
       routesToBeSaved.push(newRoute);
     }
   }
