@@ -107,6 +107,8 @@ const { Route } = require("./models/Route");
     }
   }
 
+  routesToBeSaved.sort();
+
   await Route.deleteMany({});
   await Route.insertMany(routesToBeSaved);
 
