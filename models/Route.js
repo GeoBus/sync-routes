@@ -21,6 +21,10 @@ exports.Route = mongoose.model(
       type: String,
       maxlength: 100,
     },
+    kind: {
+      type: String,
+      maxlength: 15,
+    },
     variants: [
       {
         number: { type: Number, maxlength: 2 },

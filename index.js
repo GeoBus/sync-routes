@@ -39,6 +39,21 @@ const { Route } = require("./models/Route");
         variants: [],
       };
 
+      // Check route kind (if it is a tram, neighborhood, elevator or night route)
+      if (newRoute.number.slice(-1) == "B") {
+        newRoute.kind = "neighborhood";
+      } else if (newRoute.number.slice(-1) == "E") {
+        if (newRoute.number.slice(0, 1) == "5") {
+          newRoute.kind = "elevator"; // elevator is a subtype of tram
+        } else {
+          newRoute.kind = "tram";
+        }
+      } else if (newRoute.number.slice(0, 1) == "2") {
+        newRoute.kind = "night";
+      } else {
+        newRoute.kind = "regular";
+      }
+
       // Setup route variants
       for (const variant of routeInfo.variants) {
         // For each active variant, get it's stops
