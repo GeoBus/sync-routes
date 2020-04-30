@@ -153,8 +153,8 @@ const syncRoutes = async () => {
     console.log("> Operation took " + syncDuration / 1000 + " seconds.");
     console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
     console.log();
-    console.log("Paused for " + interval / 1000 + " seconds...");
-    await new Promise((resolve) => setTimeout(resolve, interval));
+    console.log("Paused for " + interval + " seconds...");
+    await new Promise((resolve) => setTimeout(resolve, interval * 1000));
   }
   // Disconnect from the database after execution (this should never happen)
   await database.disconnect();
