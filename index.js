@@ -13,16 +13,11 @@ const carrisAPI = require("./services/carrisAPI");
 const { Route } = require("./models/Route");
 
 const syncRoutes = async () => {
-  console.log();
-  console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
-  console.log("> Module: Routes");
-  console.log("> Sync started on " + new Date().toISOString());
-
   // Request Routes ETAs for each Stop from Carris API
-  console.log("Fetching all public routes...");
+  console.log("• Fetching all public routes...");
   const allRoutes = await carrisAPI.getAllRoutes();
 
-  console.log("Updating " + allRoutes.length + " routes...");
+  console.log("• Updating " + allRoutes.length + " routes...");
 
   // Setup a new instance of routesToBeSaved
   let routesToBeSaved = [];
@@ -120,14 +115,11 @@ const syncRoutes = async () => {
   }
 
   // Replace all routes on the database
+  console.log("• Replacing all routes on the database...");
   await Route.deleteMany({});
   await Route.insertMany(routesToBeSaved);
 
-  console.log("Done! Synced " + allRoutes.length + " routes.");
-
-  await database.disconnect();
-  console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
-  console.log();
+  console.log("• Done! Synced " + allRoutes.length + " routes.");
 };
 
 /* * *
@@ -139,14 +131,28 @@ const syncRoutes = async () => {
   console.log("* * * * * * * * * * GEOBUS-SYNC * * * * * * * * * *");
   console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
   console.log();
+
   // Connect to the database
   await database.connect();
+
   // Set module configurations
   const syncIsOn = config.get("sync-is-on");
   const interval = config.get("sync-interval");
+
   // Run forever
   while (syncIsOn) {
+    console.log();
+    console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
+    console.log("> Module: Routes");
+    const start = new Date();
+    console.log("> Sync started on " + start.toISOString());
+
     await syncRoutes();
+
+    const syncDuration = new Date() - start;
+    console.log("> Operation took " + syncDuration / 1000 + " seconds.");
+    console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
+    console.log();
     console.log("Paused for " + interval / 1000 + " seconds...");
     await new Promise((resolve) => setTimeout(resolve, interval));
   }
