@@ -147,14 +147,24 @@ const syncRoutes = async () => {
     const start = new Date();
     console.log("> Sync started on " + start.toISOString());
 
-    await syncRoutes();
+    /* * * * * * * * * * * * */
+    /* */ await syncRoutes();
+    /* * * * * * * * * * * * */
 
     const syncDuration = new Date() - start;
     console.log("> Operation took " + syncDuration / 1000 + " seconds.");
     console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
     console.log();
-    console.log("Paused for " + interval + " seconds...");
-    await new Promise((resolve) => setTimeout(resolve, interval * 1000));
+    let timeLeft = interval;
+    let waiting = true;
+    while (waiting) {
+      process.stdout.write("Restarting in " + timeLeft + " seconds...\r");
+      if (timeLeft-- == 0) waiting = false;
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    process.stdout.write("Paused for " + interval + " seconds.");
+    process.stdout.write("                  ");
+    console.log();
   }
   // Disconnect from the database after execution (this should never happen)
   await database.disconnect();
