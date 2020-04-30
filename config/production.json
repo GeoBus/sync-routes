@@ -1,6 +1,6 @@
 {
-  "title": "GeoBus Sync - Routes",
-  "database": {
-    "connection-string": "env-var"
-  }
+  "title": "GeoBus Sync - Routes (Production)",
+  "sync-is-on": true,
+  "sync-interval": 25000,
+  "database-connection-string": "envar"
 }

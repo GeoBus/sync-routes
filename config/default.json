@@ -1,6 +1,0 @@
-{
-  "title": "GeoBus Sync - Routes (Dev)",
-  "database": {
-    "connection-string": "mongodb://localhost/geobus-api"
-  }
-}

@@ -7,19 +7,19 @@
 
 /* * */
 /* IMPORTS */
+const config = require("config");
 const database = require("./services/database");
 const carrisAPI = require("./services/carrisAPI");
 const { Route } = require("./models/Route");
 
-(async () => {
-  console.log("* * * GEOBUS-SYNC-ROUTES * * *");
+const syncRoutes = async () => {
   console.log();
-
-  await database.connect();
-
-  console.log("Starting...");
+  console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
+  console.log("> Module: Routes");
+  console.log("> Sync started on " + new Date().toISOString());
 
   // Request Routes ETAs for each Stop from Carris API
+  console.log("Fetching all public routes...");
   const allRoutes = await carrisAPI.getAllRoutes();
 
   console.log("Updating " + allRoutes.length + " routes...");
@@ -119,14 +119,37 @@ const { Route } = require("./models/Route");
     }
   }
 
-  routesToBeSaved.sort();
-
+  // Replace all routes on the database
   await Route.deleteMany({});
   await Route.insertMany(routesToBeSaved);
 
   console.log("Done! Synced " + allRoutes.length + " routes.");
 
   await database.disconnect();
-  console.log("* * * * * * * * * * * *");
+  console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
   console.log();
+};
+
+/* * *
+ * SYNC LOOP
+ */
+(async () => {
+  console.log();
+  console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
+  console.log("* * * * * * * * * * GEOBUS-SYNC * * * * * * * * * *");
+  console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
+  console.log();
+  // Connect to the database
+  await database.connect();
+  // Set module configurations
+  const syncIsOn = config.get("sync-is-on");
+  const interval = config.get("sync-interval");
+  // Run forever
+  while (syncIsOn) {
+    await syncRoutes();
+    console.log("Paused for " + interval / 1000 + " seconds...");
+    await new Promise((resolve) => setTimeout(resolve, interval));
+  }
+  // Disconnect from the database after execution (this should never happen)
+  await database.disconnect();
 })();

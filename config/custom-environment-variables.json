@@ -1,5 +1,3 @@
 {
-  "database": {
-    "connection-string": "database_connectionString"
-  }
+  "database-connection-string": "databaseConnectionString"
 }
