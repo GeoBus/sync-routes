@@ -8,9 +8,8 @@
 /* * */
 /* IMPORTS */
 const config = require("config");
-const database = require("./services/database");
+const fs = require("fs");
 const carrisAPI = require("./services/carrisAPI");
-const { Route } = require("./models/Route");
 
 const syncRoutes = async () => {
   // Request Routes ETAs for each Stop from Carris API
@@ -59,8 +58,8 @@ const syncRoutes = async () => {
           };
 
           /* Ascending itinerary */
+          let ascending = [];
           if (variant.upItinerary) {
-            let ascending = [];
             for (const connection of variant.upItinerary.connections) {
               ascending.push({
                 orderInRoute: connection.orderNum,
@@ -70,12 +69,12 @@ const syncRoutes = async () => {
                 lng: connection.busStop.lng,
               });
             }
-            variantToBeSaved.ascending = ascending;
           }
+          variantToBeSaved.ascending = ascending;
 
           /* Descending itinerary */
+          let descending = [];
           if (variant.downItinerary) {
-            let descending = [];
             for (const connection of variant.downItinerary.connections) {
               descending.push({
                 orderInRoute: connection.orderNum,
@@ -85,12 +84,12 @@ const syncRoutes = async () => {
                 lng: connection.busStop.lng,
               });
             }
-            variantToBeSaved.descending = descending;
           }
+          variantToBeSaved.descending = descending;
 
           /* Circular itinerary */
+          let circular = [];
           if (variant.circItinerary) {
-            let circular = [];
             for (const connection of variant.circItinerary.connections) {
               circular.push({
                 orderInRoute: connection.orderNum,
@@ -100,8 +99,8 @@ const syncRoutes = async () => {
                 lng: connection.busStop.lng,
               });
             }
-            variantToBeSaved.circular = circular;
           }
+          variantToBeSaved.circular = circular;
 
           // Append this variant to the route
           newRoute.variants.push(variantToBeSaved);
@@ -114,16 +113,23 @@ const syncRoutes = async () => {
     }
   }
 
-  // Replace all routes on the database
-  console.log("• Replacing all routes on the database...");
-  await Route.deleteMany({});
-  await Route.insertMany(routesToBeSaved);
+  console.log("• Saving data to file.");
+
+  const filename = config.get("file-name");
+  const data = JSON.stringify(routesToBeSaved);
+  fs.writeFile(filename, data, "utf8", function (err) {
+    if (error) {
+      console.log("! An error occured while writing JSON to File.");
+      return console.log(error);
+    }
+    console.log("• File has been created.");
+  });
 
   console.log("• Done! Synced " + allRoutes.length + " routes.");
 };
 
 /* * *
- * SYNC LOOP
+ * ONE TIME EXECUTION
  */
 (async () => {
   console.log();
@@ -132,40 +138,18 @@ const syncRoutes = async () => {
   console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
   console.log();
 
-  // Connect to the database
-  await database.connect();
+  console.log();
+  console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
+  console.log("> Module: Routes");
+  const start = new Date();
+  console.log("> Sync started on " + start.toISOString());
 
-  // Set module configurations
-  const syncIsOn = config.get("sync-is-on");
-  const interval = config.get("sync-interval");
+  /* * * * * * * * * * * * */
+  /* */ await syncRoutes();
+  /* * * * * * * * * * * * */
 
-  // Run forever
-  while (syncIsOn) {
-    console.log();
-    console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
-    console.log("> Module: Routes");
-    const start = new Date();
-    console.log("> Sync started on " + start.toISOString());
-
-    /* * * * * * * * * * * * */
-    /* */ await syncRoutes();
-    /* * * * * * * * * * * * */
-
-    const syncDuration = new Date() - start;
-    console.log("> Operation took " + syncDuration / 1000 + " seconds.");
-    console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
-    console.log();
-    let timeLeft = interval;
-    let waiting = true;
-    while (waiting) {
-      process.stdout.write("Restarting in " + timeLeft + " seconds...\r");
-      if (timeLeft-- == 0) waiting = false;
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-    process.stdout.write("Paused for " + interval + " seconds.");
-    process.stdout.write("                  ");
-    console.log();
-  }
-  // Disconnect from the database after execution (this should never happen)
-  await database.disconnect();
+  const syncDuration = new Date() - start;
+  console.log("> Operation took " + syncDuration / 1000 + " seconds.");
+  console.log("* * * * * * * * * * * * * * * * * * * * * * * * * *");
+  console.log();
 })();
