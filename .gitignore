@@ -103,5 +103,6 @@ dist
 # TernJS port file
 .tern-port
 config/local.json
-.DS_Store
+
+# MacOS Finder
 .DS_Store
