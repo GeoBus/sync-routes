@@ -118,7 +118,7 @@ const syncRoutes = async () => {
   const filename = config.get("file-name");
   const data = JSON.stringify(routesToBeSaved);
   fs.writeFile(filename, data, "utf8", function (err) {
-    if (error) {
+    if (err) {
       console.log("! An error occured while writing JSON to File.");
       return console.log(error);
     }
